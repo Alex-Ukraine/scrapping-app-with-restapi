@@ -51,7 +51,10 @@ def parse(company, place, redis_client):
 @app.route("/api", methods=["GET"])
 def read_all():
     # we use redis db to store pairs {company: date} where date is date last downloaded csv from web for certain company
-    redis_client = redis.Redis(host='localhost', port=6379, db=0)
+    REDIS_URL = 'localhost'
+    REDIS_URL = 'redis://:pf4ed8e4a5661b6c41a7c173ae6e17e67276b324404fac1af04b4f8d151ebbb23@ec2-3-248-238-125.eu-west-1.compute.amazonaws.com:21910'
+    #redis_client = redis.Redis(host=REDIS_URL, port=6379, db=0)
+    redis_client = redis.Redis(host=REDIS_URL)
     company_param = request.args.get('company')
     source_param = request.args.get('source')
     if company_param:
@@ -71,4 +74,4 @@ def read_all():
 
 if __name__ == "__main__":
     # port = int(os.environ.get('PORT'), 8000)
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=False, host='0.0.0.0')
