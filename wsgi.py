@@ -13,7 +13,7 @@ def parse(company, place, redis_client):
     # we get csv file by downloading from web or from local directory which already saved like cache
     data_key = company + datetime.datetime.now().strftime("%d-%b-%Y") + '.csv'
 
-    if place == 'url': # if we choose to download data from web and store like file
+    if place == 'url':  # if we choose to download data from web and store like file
         URL_BEFORE_COMPANY_NAME = 'https://query1.finance.yahoo.com/v7/finance/download/'
         URL_BEFORE_TIMESTAMP = '?period1=0&period2='
         URL_AFTER_TIMESTAMP = '&interval=1d&events=history&includeAdjustedClose=true'
@@ -55,11 +55,15 @@ def read_all():
     # we use redis db to store pairs {company: date} where date is date last downloaded csv from web for certain company
 
     if os.environ.get('IAMONHEROKU') == 'YES':
-        REDIS_URL = 'redis://:pa7e0ed010ab3c357e1ec0d74aa2a7bbef40ef0083daf0b6ffa3af7803f9bd46f@ec2-52-31-183-190.eu-west-1.compute.amazonaws.com:12640'
-        redis_client = redis.Redis(host=REDIS_URL, db=0)
+        redis_client = redis.StrictRedis(host='ec2-52-31-183-190.eu-west-1.compute.amazonaws.com',
+                                         port=12640,
+                                         password='pa7e0ed010ab3c357e1ec0d74aa2a7bbef40ef0083daf0b6ffa3af7803f9bd46f',
+                                         db=0, ssl=True,
+                                         ssl_cert_reqs=None)
     else:
         REDIS_URL = 'localhost'
         redis_client = redis.Redis(host=REDIS_URL, port=6379, db=0)
+
     company_param = request.args.get('company')
     source_param = request.args.get('source')
     if company_param:
@@ -79,4 +83,4 @@ def read_all():
 
 if __name__ == "__main__":
     # port = int(os.environ.get('PORT'), 8000)
-    app.run(debug=False, host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0')
