@@ -21,7 +21,8 @@ The task should be implemented without using Selenium.
 Do not use Yahoo Finance library. Please use plain requests to access the data.
 
 **************************************************************
-Decision to store data like disk csvfile taken because yahoo not provide downloading data only per 1 LAST!!! day. 
+Decision to store data like disk csvfile  in REDIS DB taken because 
+yahoo not provide downloading data only per 1 LAST!!! day. 
 We cannot fetch last part of data.
 
 User could only see last record only if he downloaded csv for certain company for all times.

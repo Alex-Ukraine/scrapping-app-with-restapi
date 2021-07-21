@@ -7,9 +7,9 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 
-def parse(company, place):
+def parse(company, place, redis_client):
     # we get csv file by downloading from web or from local directory which already saved like cache
-    file_name = 'csv_files/'+company + datetime.datetime.now().strftime("%d-%b-%Y") + '.csv'
+    data_key = company + datetime.datetime.now().strftime("%d-%b-%Y") + '.csv'
 
     if place == 'url': # if we choose to download data from web and store like file
         URL_BEFORE_COMPANY_NAME = 'https://query1.finance.yahoo.com/v7/finance/download/'
@@ -24,12 +24,12 @@ def parse(company, place):
 
         response = requests.get(URL, headers=HEADERS)
         url_content = response.content
+        redis_client.set(data_key, url_content)
         response = csv.reader(response.iter_lines(decode_unicode=True), delimiter=',')
-        with open(file_name, 'wb') as csv_file:
-            csv_file.write(url_content)
-    else: # if we choose to get data from directory on server
-        csv_file = open(file_name, 'r')
-        response = csv.reader(csv_file, delimiter=',')
+
+    elif place == 'db':
+        response = redis_client.get(data_key).decode('utf-8')
+        response = csv.reader(response.split('\n'), delimiter=',')
 
     headers = next(response)
     listy = []
@@ -37,13 +37,11 @@ def parse(company, place):
         dicty = {}
         for idx, value in enumerate(row):
             dicty.update({headers[idx]: value})
-        dicty.update({'company': company})
+        # dicty.update({'company': company})
         listy.append(dicty)
 
-    csv_file.close()
-
     if not listy:
-        return {"message": "no data for all time for this company"}, 200
+        return {"message": "no data for all time for this company"}
     return listy
 
 
@@ -55,10 +53,10 @@ def read_all():
     if company:
         company_date = redis_client.get(company)
         if not company_date or (company_date.decode("utf-8") != datetime.datetime.now().strftime("%d-%b-%Y")):
-            company_data = parse(company, place='url')
+            company_data = parse(company, place='url', redis_client=redis_client)
             redis_client.set(company, datetime.datetime.now().strftime("%d-%b-%Y"))
         else:
-            company_data = parse(company, place='local')
+            company_data = parse(company, place='db', redis_client=redis_client)
         return jsonify(company_data), 200
     else:
         return jsonify({'message': 'it is necessary to put company parameter in request'}), 404
