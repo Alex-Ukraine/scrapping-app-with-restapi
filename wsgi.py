@@ -56,7 +56,7 @@ def read_all():
 
     if os.environ.get('IAMONHEROKU') == 'YES':
         REDIS_URL = 'redis://:pa7e0ed010ab3c357e1ec0d74aa2a7bbef40ef0083daf0b6ffa3af7803f9bd46f@ec2-52-31-183-190.eu-west-1.compute.amazonaws.com:12640'
-        redis_client = redis.Redis(host=REDIS_URL)
+        redis_client = redis.Redis(host=REDIS_URL, db=0)
     else:
         REDIS_URL = 'localhost'
         redis_client = redis.Redis(host=REDIS_URL, port=6379, db=0)
