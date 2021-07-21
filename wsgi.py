@@ -52,7 +52,7 @@ def parse(company, place, redis_client):
 def read_all():
     # we use redis db to store pairs {company: date} where date is date last downloaded csv from web for certain company
     REDIS_URL = 'localhost'
-    REDIS_URL = 'redis://:pf4ed8e4a5661b6c41a7c173ae6e17e67276b324404fac1af04b4f8d151ebbb23@ec2-3-248-238-125.eu-west-1.compute.amazonaws.com:21910'
+    REDIS_URL = 'redis://:pa7e0ed010ab3c357e1ec0d74aa2a7bbef40ef0083daf0b6ffa3af7803f9bd46f@ec2-52-31-183-190.eu-west-1.compute.amazonaws.com:12640'
     #redis_client = redis.Redis(host=REDIS_URL, port=6379, db=0)
     redis_client = redis.Redis(host=REDIS_URL)
     company_param = request.args.get('company')
