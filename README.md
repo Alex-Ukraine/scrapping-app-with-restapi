@@ -1,3 +1,5 @@
+deployed on address: https://scrapping-yahoo.herokuapp.com/api
+************************************************************
 Python Test Task 
 
 Extract financial data from web site finance.yahoo.com  by a given company for the whole period.
@@ -21,7 +23,11 @@ The task should be implemented without using Selenium.
 Do not use Yahoo Finance library. Please use plain requests to access the data.
 
 **************************************************************
-Decision to store data like disk csvfile  in REDIS DB taken because 
+Explanation:
+
+Endpoint: '/api' Parameters: company[required], source[db, not required]
+
+Decision to store data like disk csvfile in REDIS DB taken because 
 yahoo not provide downloading data only per 1 LAST!!! day. 
 We cannot fetch last part of data.
 
