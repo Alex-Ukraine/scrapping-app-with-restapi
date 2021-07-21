@@ -1,5 +1,7 @@
 import csv
 import datetime
+import os
+
 import requests
 import redis
 from flask import Flask, request, jsonify
@@ -51,10 +53,13 @@ def parse(company, place, redis_client):
 @app.route("/api", methods=["GET"])
 def read_all():
     # we use redis db to store pairs {company: date} where date is date last downloaded csv from web for certain company
-    REDIS_URL = 'localhost'
-    REDIS_URL = 'redis://:pa7e0ed010ab3c357e1ec0d74aa2a7bbef40ef0083daf0b6ffa3af7803f9bd46f@ec2-52-31-183-190.eu-west-1.compute.amazonaws.com:12640'
-    #redis_client = redis.Redis(host=REDIS_URL, port=6379, db=0)
-    redis_client = redis.Redis(host=REDIS_URL)
+
+    if os.environ.get('IAMONHEROKU') == 'YES':
+        REDIS_URL = 'redis://:pa7e0ed010ab3c357e1ec0d74aa2a7bbef40ef0083daf0b6ffa3af7803f9bd46f@ec2-52-31-183-190.eu-west-1.compute.amazonaws.com:12640'
+        redis_client = redis.Redis(host=REDIS_URL)
+    else:
+        REDIS_URL = 'localhost'
+        redis_client = redis.Redis(host=REDIS_URL, port=6379, db=0)
     company_param = request.args.get('company')
     source_param = request.args.get('source')
     if company_param:
